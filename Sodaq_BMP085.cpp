@@ -15,14 +15,14 @@
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 
-#include "Adafruit_BMP085.h"
+#include "Sodaq_BMP085.h"
 #include <util/delay.h>
 
-Adafruit_BMP085::Adafruit_BMP085() {
+Sodaq_BMP085::Sodaq_BMP085() {
 }
 
 
-void Adafruit_BMP085::begin(uint8_t mode) {
+void Sodaq_BMP085::begin(uint8_t mode) {
   if (mode > BMP085_ULTRAHIGHRES) 
     mode = BMP085_ULTRAHIGHRES;
   oversampling = mode;
@@ -63,7 +63,7 @@ void Adafruit_BMP085::begin(uint8_t mode) {
 #endif
 }
 
-uint16_t Adafruit_BMP085::readRawTemperature(void) {
+uint16_t Sodaq_BMP085::readRawTemperature(void) {
   write8(BMP085_CONTROL, BMP085_READTEMPCMD);
   _delay_ms(5);
 #if BMP085_DEBUG == 1
@@ -72,7 +72,7 @@ uint16_t Adafruit_BMP085::readRawTemperature(void) {
   return read16(BMP085_TEMPDATA);
 }
 
-uint32_t Adafruit_BMP085::readRawPressure(void) {
+uint32_t Sodaq_BMP085::readRawPressure(void) {
   uint32_t raw;
 
   write8(BMP085_CONTROL, BMP085_READPRESSURECMD + (oversampling << 6));
@@ -107,7 +107,7 @@ uint32_t Adafruit_BMP085::readRawPressure(void) {
 }
 
 
-int32_t Adafruit_BMP085::readPressure(void) {
+int32_t Sodaq_BMP085::readPressure(void) {
   int32_t UT, UP, B3, B5, B6, X1, X2, X3, p;
   uint32_t B4, B7;
 
@@ -192,7 +192,7 @@ int32_t Adafruit_BMP085::readPressure(void) {
 }
 
 
-float Adafruit_BMP085::readTemperature(void) {
+float Sodaq_BMP085::readTemperature(void) {
   int32_t UT, X1, X2, B5;     // following ds convention
   float temp;
 
@@ -217,7 +217,7 @@ float Adafruit_BMP085::readTemperature(void) {
   return temp;
 }
 
-float Adafruit_BMP085::readAltitude(float sealevelPressure) {
+float Sodaq_BMP085::readAltitude(float sealevelPressure) {
   float altitude;
 
   float pressure = readPressure();
@@ -230,7 +230,7 @@ float Adafruit_BMP085::readAltitude(float sealevelPressure) {
 
 /*********************************************************************/
 
-uint8_t Adafruit_BMP085::read8(uint8_t a) {
+uint8_t Sodaq_BMP085::read8(uint8_t a) {
   uint8_t ret;
 
   Wire.beginTransmission(BMP085_I2CADDR); // start transmission to device 
@@ -253,7 +253,7 @@ uint8_t Adafruit_BMP085::read8(uint8_t a) {
   return ret;
 }
 
-uint16_t Adafruit_BMP085::read16(uint8_t a) {
+uint16_t Sodaq_BMP085::read16(uint8_t a) {
   uint16_t ret;
 
   Wire.beginTransmission(BMP085_I2CADDR); // start transmission to device 
@@ -280,7 +280,7 @@ uint16_t Adafruit_BMP085::read16(uint8_t a) {
   return ret;
 }
 
-void Adafruit_BMP085::write8(uint8_t a, uint8_t d) {
+void Sodaq_BMP085::write8(uint8_t a, uint8_t d) {
   Wire.beginTransmission(BMP085_I2CADDR); // start transmission to device 
 #if (ARDUINO >= 100)
   Wire.write(a); // sends register address to read from
