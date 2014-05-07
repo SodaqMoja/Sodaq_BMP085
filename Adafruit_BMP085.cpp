@@ -28,6 +28,9 @@ void Adafruit_BMP085::begin(uint8_t mode) {
 
   Wire.begin();
 
+  if (read8(0xD0) != 0x55)
+    return;
+
   /* read calibration data */
   ac1 = read16(BMP085_CAL_AC1);
   ac2 = read16(BMP085_CAL_AC2);
@@ -128,10 +131,9 @@ int32_t Adafruit_BMP085::readPressure(void) {
 #endif
 
   // do temperature calculations
-  X1 = ((UT - (int32_t)ac6) * (int32_t)ac5) >> 15;
-  X2 = ((int32_t)mc << 11) - (X1 + md)/2;     // round up
-  X2 /= (X1 + md);
-  B5 = X1 + X2;
+  X1=(UT-(int32_t)(ac6))*((int32_t)(ac5))/pow(2,15);
+  X2=((int32_t)mc*pow(2,11))/(X1+(int32_t)md);
+  B5=X1 + X2;
 
 #if BMP085_DEBUG == 1
   Serial.print("X1 = "); Serial.println(X1);
@@ -205,12 +207,12 @@ float Adafruit_BMP085::readTemperature(void) {
 #endif
 
   // step 1
-  X1 = ((UT - (int32_t)ac6) * (int32_t)ac5) >> 15;
-  X2 = ((int32_t)mc << 11) / (X1 + (int32_t)md);
+  X1 = (UT - (int32_t)ac6) * ((int32_t)ac5) / pow(2,15);
+  X2 = ((int32_t)mc * pow(2,11)) / (X1+(int32_t)md);
   B5 = X1 + X2;
-  temp = (B5 + 8) >> 4;
+  temp = (B5+8)/pow(2,4);
   temp /= 10;
-
+  
   return temp;
 }
 

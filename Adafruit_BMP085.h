@@ -1,3 +1,5 @@
+#ifndef ADAFRUIT_BMP085_H
+#define ADAFRUIT_BMP085_H
 /*************************************************** 
   This is a library for the BMP085 Barometric Pressure & Temp Sensor
 
@@ -69,3 +71,4 @@ class Adafruit_BMP085 {
   uint16_t ac4, ac5, ac6;
 };
 
+#endif // ADAFRUIT_BMP085_H
