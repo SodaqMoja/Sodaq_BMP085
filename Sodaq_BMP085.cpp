@@ -19,6 +19,7 @@
 #include <util/delay.h>
 
 #define BMP085_DEBUG 0
+#define BMP085_ENABLE_DIAG 0
 
 #define BMP085_I2CADDR 0x77
 
@@ -68,7 +69,7 @@ void Sodaq_BMP085::begin(uint8_t mode) {
   mb = read16(BMP085_CAL_MB);
   mc = read16(BMP085_CAL_MC);
   md = read16(BMP085_CAL_MD);
-#if (BMP085_DEBUG == 1)
+#if BMP085_ENABLE_DIAG
   Serial.print("ac1 = "); Serial.println(ac1, DEC);
   Serial.print("ac2 = "); Serial.println(ac2, DEC);
   Serial.print("ac3 = "); Serial.println(ac3, DEC);
@@ -88,7 +89,7 @@ void Sodaq_BMP085::begin(uint8_t mode) {
 uint16_t Sodaq_BMP085::readRawTemperature(void) {
   write8(BMP085_CONTROL, BMP085_READTEMPCMD);
   _delay_ms(5);
-#if BMP085_DEBUG == 1
+#if BMP085_ENABLE_DIAG
   Serial.print("Raw temp: "); Serial.println(read16(BMP085_TEMPDATA));
 #endif
   return read16(BMP085_TEMPDATA);
@@ -122,7 +123,7 @@ uint32_t Sodaq_BMP085::readRawPressure(void) {
   }
  */
 
-#if BMP085_DEBUG == 1
+#if BMP085_ENABLE_DIAG
   Serial.print("Raw pressure: "); Serial.println(raw);
 #endif
   return raw;
@@ -145,7 +146,7 @@ int32_t Sodaq_BMP085::computeB5(int32_t UT)
   X2 = ((int32_t)mc << 11) / (X1 + md);
   B5 = X1 + X2;
 
-#if BMP085_DEBUG == 1
+#if BMP085_ENABLE_DIAG
   Serial.print("X1 = "); Serial.println(X1);
   Serial.print("X2 = "); Serial.println(X2);
   Serial.print("B5 = "); Serial.println(B5);
@@ -187,7 +188,7 @@ int32_t Sodaq_BMP085::readPressure(void) {
   X3 = X1 + X2;
   B3 = ((((int32_t)ac1*4 + X3) << oversampling) + 2) / 4;
 
-#if BMP085_DEBUG == 1
+#if BMP085_ENABLE_DIAG
   Serial.print("B6 = "); Serial.println(B6);
   Serial.print("X1 = "); Serial.println(X1);
   Serial.print("X2 = "); Serial.println(X2);
@@ -200,7 +201,7 @@ int32_t Sodaq_BMP085::readPressure(void) {
   B4 = ((uint32_t)ac4 * (uint32_t)(X3 + 32768)) >> 15;
   B7 = ((uint32_t)UP - B3) * (uint32_t)( 50000UL >> oversampling );
 
-#if BMP085_DEBUG == 1
+#if BMP085_ENABLE_DIAG
   Serial.print("X1 = "); Serial.println(X1);
   Serial.print("X2 = "); Serial.println(X2);
   Serial.print("B4 = "); Serial.println(B4);
@@ -216,14 +217,14 @@ int32_t Sodaq_BMP085::readPressure(void) {
   X1 = (X1 * 3038) >> 16;
   X2 = (-7357 * p) >> 16;
 
-#if BMP085_DEBUG == 1
+#if BMP085_ENABLE_DIAG
   Serial.print("p = "); Serial.println(p);
   Serial.print("X1 = "); Serial.println(X1);
   Serial.print("X2 = "); Serial.println(X2);
 #endif
 
   p = p + ((X1 + X2 + (int32_t)3791)>>4);
-#if BMP085_DEBUG == 1
+#if BMP085_ENABLE_DIAG
   Serial.print("p = "); Serial.println(p);
 #endif
   return p;
