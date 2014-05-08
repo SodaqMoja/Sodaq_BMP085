@@ -214,8 +214,18 @@ int32_t Sodaq_BMP085::readPressure(void) {
 }
 
 
+/*
+ * Read and calculate true temperature
+ *
+ * The manual (BMP085 Data Sheet Rev 1.2) says:
+ *  X1 = (UT - AC6) * AC5 / 2^15
+ *  X2 = MC * 2^11 / (X1 + MD)
+ *  B5 = X1 + X2
+ *  T = (B5 + 8) / 2^4
+ * and this is in units of 0.1 degrees Celcius
+ */
 float Sodaq_BMP085::readTemperature(void) {
-  int32_t UT, X1, X2, B5;     // following ds convention
+  int32_t UT, X1, X2, B5;     // following Data Sheet convention
   float temp;
 
   UT = readRawTemperature();
@@ -230,10 +240,10 @@ float Sodaq_BMP085::readTemperature(void) {
 #endif
 
   // step 1
-  X1 = (UT - (int32_t)ac6) * ((int32_t)ac5) / pow(2,15);
-  X2 = ((int32_t)mc * pow(2,11)) / (X1+(int32_t)md);
+  X1 = ((UT - ac6) * ac5) >> 15;
+  X2 = ((int32_t)mc << 11) / (X1 + md);
   B5 = X1 + X2;
-  temp = (B5+8)/pow(2,4);
+  temp = (B5 + 8) >> 4;
   temp /= 10;
   
   return temp;
