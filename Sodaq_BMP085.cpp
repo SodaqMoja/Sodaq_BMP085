@@ -41,7 +41,9 @@
 #define BMP085_READTEMPCMD       0x2E
 #define BMP085_READPRESSURECMD   0x34
 
-Sodaq_BMP085::Sodaq_BMP085() {
+Sodaq_BMP085::Sodaq_BMP085()
+{
+  oversampling = BMP085_ULTRAHIGHRES;
 }
 
 void Sodaq_BMP085::begin(uint8_t mode)
@@ -88,6 +90,10 @@ void Sodaq_BMP085::begin(uint8_t mode)
 
 uint16_t Sodaq_BMP085::readRawTemperature(void)
 {
+  if ((ac1 == 0 || ac1 == -1) && (mb == 0 || mb == -1)) {
+    // The device parameters were not read properly, or begin() was never executed
+    begin(oversampling);
+  }
   write8(BMP085_CONTROL, BMP085_READTEMPCMD);
   _delay_ms(5);
 #if BMP085_ENABLE_DIAG
