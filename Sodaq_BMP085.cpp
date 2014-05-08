@@ -128,6 +128,30 @@ uint32_t Sodaq_BMP085::readRawPressure(void) {
   return raw;
 }
 
+/*
+ * Do some precalculation for temperature (B5)
+ *
+ * The manual (BMP085 Data Sheet Rev 1.2) says:
+ *  X1 = (UT - AC6) * AC5 / 2^15
+ *  X2 = MC * 2^11 / (X1 + MD)
+ *  B5 = X1 + X2
+ */
+int32_t Sodaq_BMP085::computeB5(int32_t UT)
+{
+  int32_t X1;
+  int32_t X2;
+  int32_t B5;
+  X1 = ((UT - ac6) * ac5) >> 15;
+  X2 = ((int32_t)mc << 11) / (X1 + md);
+  B5 = X1 + X2;
+
+#if BMP085_DEBUG == 1
+  Serial.print("X1 = "); Serial.println(X1);
+  Serial.print("X2 = "); Serial.println(X2);
+  Serial.print("B5 = "); Serial.println(B5);
+#endif
+  return B5;
+}
 
 int32_t Sodaq_BMP085::readPressure(void) {
   int32_t UT, UP, B3, B5, B6, X1, X2, X3, p;
@@ -154,15 +178,7 @@ int32_t Sodaq_BMP085::readPressure(void) {
 #endif
 
   // do temperature calculations
-  X1=(UT-(int32_t)(ac6))*((int32_t)(ac5))/pow(2,15);
-  X2=((int32_t)mc*pow(2,11))/(X1+(int32_t)md);
-  B5=X1 + X2;
-
-#if BMP085_DEBUG == 1
-  Serial.print("X1 = "); Serial.println(X1);
-  Serial.print("X2 = "); Serial.println(X2);
-  Serial.print("B5 = "); Serial.println(B5);
-#endif
+  B5 = computeB5(UT);
 
   // do pressure calcs
   B6 = B5 - 4000;
@@ -213,7 +229,6 @@ int32_t Sodaq_BMP085::readPressure(void) {
   return p;
 }
 
-
 /*
  * Read and calculate true temperature
  *
@@ -225,7 +240,7 @@ int32_t Sodaq_BMP085::readPressure(void) {
  * and this is in units of 0.1 degrees Celcius
  */
 float Sodaq_BMP085::readTemperature(void) {
-  int32_t UT, X1, X2, B5;     // following Data Sheet convention
+  int32_t UT, B5;
   float temp;
 
   UT = readRawTemperature();
@@ -240,9 +255,7 @@ float Sodaq_BMP085::readTemperature(void) {
 #endif
 
   // step 1
-  X1 = ((UT - ac6) * ac5) >> 15;
-  X2 = ((int32_t)mc << 11) / (X1 + md);
-  B5 = X1 + X2;
+  B5 = computeB5(UT);
   temp = (B5 + 8) >> 4;
   temp /= 10;
   
