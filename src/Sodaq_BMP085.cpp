@@ -16,7 +16,6 @@
  ****************************************************/
 
 #include "Sodaq_BMP085.h"
-#include <util/delay.h>
 
 #define BMP085_DEBUG 0
 #define BMP085_ENABLE_DIAG 0
@@ -95,7 +94,7 @@ uint16_t Sodaq_BMP085::readRawTemperature(void)
     begin(oversampling);
   }
   write8(BMP085_CONTROL, BMP085_READTEMPCMD);
-  _delay_ms(5);
+  delay(5);
 #if BMP085_ENABLE_DIAG
   Serial.print("Raw temp: "); Serial.println(read16(BMP085_TEMPDATA));
 #endif
@@ -109,13 +108,13 @@ uint32_t Sodaq_BMP085::readRawPressure(void)
   write8(BMP085_CONTROL, BMP085_READPRESSURECMD + (oversampling << 6));
 
   if (oversampling == BMP085_ULTRALOWPOWER)
-    _delay_ms(5);
+    delay(5);
   else if (oversampling == BMP085_STANDARD)
-    _delay_ms(8);
+    delay(8);
   else if (oversampling == BMP085_HIGHRES)
-    _delay_ms(14);
+    delay(14);
   else
-    _delay_ms(26);
+    delay(26);
 
   raw = read16(BMP085_PRESSUREDATA);
 
