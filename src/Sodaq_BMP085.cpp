@@ -282,6 +282,19 @@ float Sodaq_BMP085::readTemperature(void)
   return temp;
 }
 
+/*
+ * Read the pressure calculated to Sea Level Pressure based on the passed
+ * altitude and local gravity
+ */
+int32_t Sodaq_BMP085::readPressure(int32_t altitude, float gravity)
+{
+  float Rd = 287.0f; // dry gas constant for the atmosphere
+  int32_t pressure = readPressure();
+  float temperature = readTemperature();
+  int32_t seaLevelPressure = pressure + pressure - ((pressure * 1000) / exp((gravity * altitude) / (Rd * (temperature + 273.15))))/1000;
+  return seaLevelPressure;
+}
+
 float Sodaq_BMP085::readAltitude(float sealevelPressure)
 {
   float altitude;

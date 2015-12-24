@@ -24,6 +24,7 @@
  #include "WProgram.h"
 #endif
 #include "Wire.h"
+#include <math.h>
 
 #define BMP085_ULTRALOWPOWER 0
 #define BMP085_STANDARD      1
@@ -40,6 +41,8 @@ class Sodaq_BMP085 {
   float readAltitude(float sealevelPressure = 101325); // std atmosphere
   uint16_t readRawTemperature(void);
   uint32_t readRawPressure(void);
+  int32_t readPressure(int32_t altitude, float gravity = 9.81);
+
   
  private:
   int32_t computeB5(int32_t UT);
