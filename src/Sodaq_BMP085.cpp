@@ -15,6 +15,8 @@
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 
+#include <math.h>
+
 #include "Sodaq_BMP085.h"
 
 #define BMP085_DEBUG 0
@@ -291,7 +293,8 @@ int32_t Sodaq_BMP085::readPressure(int32_t altitude, float gravity)
   float Rd = 287.0f; // dry gas constant for the atmosphere
   int32_t pressure = readPressure();
   float temperature = readTemperature();
-  int32_t seaLevelPressure = pressure + pressure - ((pressure * 1000) / exp((gravity * altitude) / (Rd * (temperature + 273.15))))/1000;
+  int32_t seaLevelPressure = pressure + pressure -
+          ((pressure * 1000) / exp((gravity * altitude) / (Rd * (temperature + 273.15)))) / 1000;
   return seaLevelPressure;
 }
 

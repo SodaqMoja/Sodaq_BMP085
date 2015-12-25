@@ -24,7 +24,6 @@
  #include "WProgram.h"
 #endif
 #include "Wire.h"
-#include <math.h>
 
 #define BMP085_ULTRALOWPOWER 0
 #define BMP085_STANDARD      1
