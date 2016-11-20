@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include <Adafruit_BMP085.h>
+#include <Sodaq_BMP085.h>
 
 /*************************************************** 
   This is an example for the BMP085 Barometric Pressure & Temp Sensor
@@ -24,7 +24,7 @@
 // EOC is not used, it signifies an end of conversion
 // XCLR is a reset pin, also not used here
 
-Adafruit_BMP085 bmp;
+Sodaq_BMP085 bmp;
   
 void setup() {
   Serial.begin(9600);
